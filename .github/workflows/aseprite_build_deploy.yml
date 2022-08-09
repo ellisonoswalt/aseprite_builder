@@ -63,7 +63,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
        matrix:
-         os: [windows-latest, ubuntu-latest, macOS-latest]
+         os: [ubuntu-latest]
        fail-fast: false    
     steps:
       - name: (Windows) Install dependencies
