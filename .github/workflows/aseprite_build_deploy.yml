@@ -1,11 +1,13 @@
 name: Build and deploy Aseprite
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 0 * * *'
   push:
     branches:
       - master
+      - fix
 
 env:
   BUILD_TYPE: Release
@@ -42,7 +44,7 @@ jobs:
         key: cached_version
     - name: Should we start new build?
       id: should_build
-      if: steps.version_check.outputs.cache-hit != 'true'
+      if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/fix' || steps.version_check.outputs.cache-hit != 'true'
       run: echo "should_build=true" >> $GITHUB_OUTPUT
     - name: Create Release
       id: create_release
@@ -73,7 +75,7 @@ jobs:
         uses: seanmiddleditch/gha-setup-ninja@v3
       - name: (Ubuntu) Install dependencies
         if: matrix.os == 'ubuntu-latest'
-        run: sudo apt install -y cmake ninja-build libxcursor-dev libxi-dev libgl1-mesa-dev
+        run: sudo apt update && sudo apt install -y cmake ninja-build libxcursor-dev libxi-dev libgl1-mesa-dev
       - name: (macOS) Install dependencies
         if: matrix.os == 'macOS-latest'
         run: brew install ninja p7zip
